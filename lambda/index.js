@@ -20,7 +20,7 @@ exports.handler = function(event, context, callback) {
         }
       })
   }
-  const match = key.match(/(\d+)x?(\d+)?\/(.+\.(png|PNG|jpg|JPG|jpeg|JPEG|tif|TIF|tiff|TIFF|webp|WEBP))/);
+  const match = key.match(/(\d+)?x?(\d+)?\/(.+\.(png|PNG|jpg|JPG|jpeg|JPEG|tif|TIF|tiff|TIFF|webp|WEBP))/);
   if(match === null){
     S3.headObject({Bucket: BUCKET, Key: key}, function(err, data) {
       if(err){
@@ -54,27 +54,31 @@ exports.handler = function(event, context, callback) {
             }
           })
         }else{
-          let height = 0;
-          const width = parseInt(match[1], 10);
-          if(match[2] === undefined){
-            height = parseInt(match[1], 10);
-          }else {
-            height = parseInt(match[2], 10);
+          let width = null;
+          let height = null;
+          if(match[1] !== undefined) {
+              width = parseInt(match[1], 10);
+              if (width < 1) {
+                  width = null;
+              }
           }
+
+          if(match[2] !== undefined){
+            height = parseInt(match[2], 10);
+              if (height < 1) {
+                  height = null;
+              }
+          }
+
           const maxPixelCount = 5000;
-          const minPixelCount = 0;
-          if(width <= minPixelCount || width > maxPixelCount || height <= minPixelCount || height > maxPixelCount) {
+          if((width && width > maxPixelCount) || (height && height > maxPixelCount)) {
             return callback(null, {
               statusCode: '400',
-              body: JSON.stringify({ error: `Image requested is not in range ${minPixelCount+=1}-${maxPixelCount} pixels.` }),
+              body: JSON.stringify({ error: `Image requested is not in range 1-${maxPixelCount} pixels.` }),
               headers: {
                 'Content-Type': 'application/json'
               }
             })
-          }
-
-          if(match[2] === undefined) {
-              height = null;
           }
 
           S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
