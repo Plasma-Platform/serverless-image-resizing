@@ -1,4 +1,4 @@
-FROM  node:lts-stretch
+FROM  node:8.10
 
 ADD etc/nodesource.gpg.key /etc
 
