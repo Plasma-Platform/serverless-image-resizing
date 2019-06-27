@@ -1,6 +1,6 @@
 {
   "name": "image-resize",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Serverless image resizing",
   "readme": "Serverless image resizing",
   "repository": "https://github.com/Plasma-Platform/serverless-image-resizing",
