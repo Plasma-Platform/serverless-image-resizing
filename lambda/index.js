@@ -85,7 +85,7 @@ exports.handler = function(event, context, callback) {
           .then(data => Sharp(data.Body)
           .resize(width, height)
           .crop(Sharp.gravity.north)
-          .toFormat('jpeg')
+          .jpeg({quality: 92})
           .toBuffer()
         )
         .then(buffer => S3.putObject({
